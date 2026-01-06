@@ -1,0 +1,11 @@
+# Exported files (regenerate from source)
+exports/*.stl
+exports/*.png
+
+# OpenSCAD backup files
+*.scad~
+*.scad.bak
+
+# OS files
+.DS_Store
+Thumbs.db
