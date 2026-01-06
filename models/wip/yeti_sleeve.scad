@@ -60,6 +60,15 @@ module sleeve_body() {
             cylinder(d=inner_d, h=bottom_ring + 2);
     }
 
+    // Bottom floor with straight spoke ribs
+    spoke_width = 5;
+    spoke_height = 5;
+    for (i = [0:5]) {  // 6 ribs = 12 spokes (each crosses full diameter)
+        rotate([0, 0, i * 30])
+            translate([-inner_r, -spoke_width/2, 0])
+                cube([inner_d, spoke_width, spoke_height]);
+    }
+
     // Top solid ring
     translate([0, 0, sleeve_height - top_ring])
     difference() {
@@ -71,17 +80,11 @@ module sleeve_body() {
     // Vertical ribs
     for (i = [0:rib_count-1]) {
         rotate([0, 0, i * 360/rib_count])
-            vertical_rib(bottom_ring, sleeve_height - top_ring - bottom_ring);
+            translate([0, 0, bottom_ring])
+            rotate_extrude(angle=rib_angle)
+                translate([inner_r, 0])
+                    square([wall, sleeve_height - top_ring - bottom_ring]);
     }
-}
-
-module vertical_rib(z_start, height) {
-    rib_angle = 15;
-
-    translate([0, 0, z_start])
-    rotate_extrude(angle=rib_angle)
-        translate([inner_r, 0])
-            square([wall, height]);
 }
 
 module lip_ring() {
