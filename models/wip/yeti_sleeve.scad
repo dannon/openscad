@@ -17,7 +17,7 @@ lip_width = 10;          // How far lip extends outward
 hook_count = 3;          // Number of hooks
 hook_width = 12;         // Width of each hook (circumferential)
 hook_drop = 12;          // How far hooks extend down
-hook_thickness = 4;      // Thickness of hook material
+hook_thickness = 5;      // Thickness of hook material (matches lip height)
 elastic_gap = 8;         // Gap for elastic (thickness of elastic)
 
 /* [Print Settings] */
@@ -56,12 +56,44 @@ module sleeve_body() {
 }
 
 module lip_ring() {
-    // Simple flat flared lip
+    // Flared lip with consistent thickness
     difference() {
-        cylinder(r1=outer_r, r2=lip_outer_r, h=wall*2);
+        union() {
+            // Main flange - less taper, stays thick at edge
+            cylinder(r1=outer_r, r2=lip_outer_r, h=wall*2);
+
+            // Thicken the outer edge
+            translate([0, 0, 0])
+                difference() {
+                    cylinder(r=lip_outer_r, h=wall*2);
+                    translate([0, 0, -1])
+                        cylinder(r=lip_outer_r - wall*2, h=wall*2 + 2);
+                }
+        }
+        // Hollow for bottle
         translate([0, 0, -1])
             cylinder(d=inner_d, h=wall*2 + 2);
     }
+
+    // Reinforcement ribs from hooks to sleeve body
+    for (i = [0:hook_count-1]) {
+        rotate([0, 0, i * 360/hook_count])
+            hook_rib();
+    }
+}
+
+module hook_rib() {
+    // Radial rib connecting hook area to main body
+    rib_width = hook_width;
+
+    translate([0, -rib_width/2, 0])
+        linear_extrude(height=wall*2)
+            polygon([
+                [outer_r - wall, 0],
+                [outer_r - wall, rib_width],
+                [lip_outer_r, rib_width/2 + hook_width/2],
+                [lip_outer_r, rib_width/2 - hook_width/2]
+            ]);
 }
 
 module hanging_hook() {
