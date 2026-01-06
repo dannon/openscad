@@ -82,30 +82,31 @@ module hook_profile_2d() {
     // 2D profile of hook - extends OUT then curves DOWN
     // Like a little awning/overhang
     t = hook_thickness;
-    drop = hook_drop;
-    gap = elastic_gap;
-    outward = 10;  // How far hook extends outward before dropping
+
+    hook_out = 5;    // How far hook extends outward
+    hook_down = 5;   // How far hook drops
+    hook_in = 2;     // How far hook curls back inward
 
     // Horizontal extension outward from lip
     hull() {
         circle(d=t);
-        translate([outward, 0])
+        translate([hook_out, 0])
             circle(d=t);
     }
 
     // Vertical drop
     hull() {
-        translate([outward, 0])
+        translate([hook_out, 0])
             circle(d=t);
-        translate([outward, -drop])
+        translate([hook_out, -hook_down])
             circle(d=t);
     }
 
     // Inward curl at bottom (grips under elastic)
     hull() {
-        translate([outward, -drop])
+        translate([hook_out, -hook_down])
             circle(d=t);
-        translate([outward - gap, -drop])
+        translate([hook_out - hook_in, -hook_down])
             circle(d=t);
     }
 }
