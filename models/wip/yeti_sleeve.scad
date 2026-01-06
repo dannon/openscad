@@ -48,11 +48,40 @@ union() {
 }
 
 module sleeve_body() {
+    rib_count = 12;          // Number of vertical ribs (every 30°)
+    rib_angle = 15;          // Angular width of each rib (degrees)
+    bottom_ring = 10;        // Solid ring at bottom
+    top_ring = 10;           // Solid ring at top (below lip)
+
+    // Bottom solid ring
     difference() {
-        cylinder(d=outer_d, h=sleeve_height);
+        cylinder(d=outer_d, h=bottom_ring);
         translate([0, 0, -1])
-            cylinder(d=inner_d, h=sleeve_height + 2);
+            cylinder(d=inner_d, h=bottom_ring + 2);
     }
+
+    // Top solid ring
+    translate([0, 0, sleeve_height - top_ring])
+    difference() {
+        cylinder(d=outer_d, h=top_ring);
+        translate([0, 0, -1])
+            cylinder(d=inner_d, h=top_ring + 2);
+    }
+
+    // Vertical ribs
+    for (i = [0:rib_count-1]) {
+        rotate([0, 0, i * 360/rib_count])
+            vertical_rib(bottom_ring, sleeve_height - top_ring - bottom_ring);
+    }
+}
+
+module vertical_rib(z_start, height) {
+    rib_angle = 15;
+
+    translate([0, 0, z_start])
+    rotate_extrude(angle=rib_angle)
+        translate([inner_r, 0])
+            square([wall, height]);
 }
 
 module lip_ring() {
