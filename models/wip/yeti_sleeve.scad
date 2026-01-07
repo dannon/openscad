@@ -69,6 +69,14 @@ module sleeve_body() {
                 cube([inner_d, spoke_width, spoke_height]);
     }
 
+    // Inner lip at base (around inside edge of wall)
+    lip_inset = 5;  // How far lip extends inward
+    difference() {
+        cylinder(d=inner_d, h=spoke_height);
+        translate([0, 0, -1])
+            cylinder(d=inner_d - lip_inset*2, h=spoke_height + 2);
+    }
+
     // Top solid ring
     translate([0, 0, sleeve_height - top_ring])
     difference() {
@@ -117,13 +125,13 @@ module helix_band(height, turns, band_width, segments) {
             rotate([0, 0, i * seg_angle])
                 translate([inner_r, 0, i * seg_height])
                     rotate([0, 90, 0])
-                        cylinder(d=band_width, h=wall, $fn=16);
+                        cylinder(d=band_width, h=wall, $fn=32);
 
             // Next segment
             rotate([0, 0, (i+1) * seg_angle])
                 translate([inner_r, 0, (i+1) * seg_height])
                     rotate([0, 90, 0])
-                        cylinder(d=band_width, h=wall, $fn=16);
+                        cylinder(d=band_width, h=wall, $fn=32);
         }
     }
 }
