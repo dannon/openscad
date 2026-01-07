@@ -77,13 +77,54 @@ module sleeve_body() {
             cylinder(d=inner_d, h=top_ring + 2);
     }
 
-    // Vertical ribs
-    for (i = [0:rib_count-1]) {
-        rotate([0, 0, i * 360/rib_count])
+    // Double helix spiral bands (replaces vertical ribs)
+    helix_height = sleeve_height - top_ring - bottom_ring;
+    helix_turns = 1.5;        // Number of full rotations
+    helix_width = 5;          // Width of spiral band
+    helix_segments = 60;      // Smoothness
+
+    // First double helix (clockwise)
+    for (offset = [0, 180]) {
+        rotate([0, 0, offset])
             translate([0, 0, bottom_ring])
-            rotate_extrude(angle=rib_angle)
-                translate([inner_r, 0])
-                    square([wall, sleeve_height - top_ring - bottom_ring]);
+                helix_band(helix_height, helix_turns, helix_width, helix_segments);
+    }
+
+    // Second double helix (counter-clockwise) - criss-cross pattern
+    for (offset = [90, 270]) {
+        rotate([0, 0, offset])
+            translate([0, 0, bottom_ring])
+                helix_band(helix_height, -helix_turns, helix_width, helix_segments);
+    }
+
+    // 4 vertical ribs at helix start points
+    rib_width = 5;
+    for (angle = [0, 90, 180, 270]) {
+        rotate([0, 0, angle])
+            translate([inner_r, -rib_width/2, bottom_ring])
+                cube([wall, rib_width, helix_height]);
+    }
+}
+
+module helix_band(height, turns, band_width, segments) {
+    // Create a helix by hulling successive segments
+    seg_height = height / segments;
+    seg_angle = (turns * 360) / segments;
+
+    for (i = [0:segments-1]) {
+        hull() {
+            // Current segment - flush with wall surface
+            rotate([0, 0, i * seg_angle])
+                translate([inner_r, 0, i * seg_height])
+                    rotate([0, 90, 0])
+                        cylinder(d=band_width, h=wall, $fn=16);
+
+            // Next segment
+            rotate([0, 0, (i+1) * seg_angle])
+                translate([inner_r, 0, (i+1) * seg_height])
+                    rotate([0, 90, 0])
+                        cylinder(d=band_width, h=wall, $fn=16);
+        }
     }
 }
 
