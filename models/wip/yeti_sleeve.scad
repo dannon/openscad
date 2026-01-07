@@ -97,9 +97,9 @@ module sleeve_body() {
                 helix_band(helix_height, -helix_turns, helix_width, helix_segments);
     }
 
-    // 4 vertical ribs at helix start points
+    // 8 vertical ribs every 45°
     rib_width = 5;
-    for (angle = [0, 90, 180, 270]) {
+    for (angle = [0, 45, 90, 135, 180, 225, 270, 315]) {
         rotate([0, 0, angle])
             translate([inner_r, -rib_width/2, bottom_ring])
                 cube([wall, rib_width, helix_height]);
