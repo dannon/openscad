@@ -7,8 +7,8 @@ rod_diameter = 30;       // 3cm rod diameter (mm)
 rod_clearance = 1;       // Extra space around rod
 
 /* [Stand Dimensions] */
-// Bottom of U at 70mm, so stand_height = 70 + rod_radius
-stand_height = 70 + (30 + 1)/2;  // ~85.5mm, puts bottom of U at 70mm
+// Bottom of U at 165mm, so stand_height = 165 + rod_radius
+stand_height = 165 + (30 + 1)/2;  // ~180.5mm, puts bottom of U at 165mm
 stand_width = 40;        // Width of the flat piece
 thickness = 8;          // 8mm thick
 
@@ -23,17 +23,23 @@ $fn = 64;
 rod_r = (rod_diameter + rod_clearance) / 2;
 
 // Main assembly
-union() {
-    // Main flat vertical piece with semicircle cutout
-    difference() {
-        // Flat rectangle
-        translate([-stand_width/2, 0, 0])
-            cube([stand_width, thickness, stand_height]);
+cup_extension = 10;  // How far cup extends forward from main plane
 
-        // Semicircle cutout at top
+union() {
+    // Main flat vertical piece
+    translate([-stand_width/2, 0, 0])
+        cube([stand_width, thickness, stand_height - rod_r]);
+
+    // Extended cup area at top
+    difference() {
+        // Cup block extending forward
+        translate([-stand_width/2, 0, stand_height - rod_r - thickness])
+            cube([stand_width, thickness + cup_extension, rod_r + thickness]);
+
+        // Semicircle cutout
         translate([0, -1, stand_height])
             rotate([-90, 0, 0])
-                cylinder(r=rod_r, h=thickness + 2);
+                cylinder(r=rod_r, h=thickness + cup_extension + 2);
     }
 
     // Foot extending forward (same direction as rod), full width
