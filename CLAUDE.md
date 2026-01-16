@@ -39,9 +39,7 @@ Add comments when orientation matters:
 ## Project Structure
 ```
 openscad/
-├── models/
-│   ├── wip/         # Work in progress
-│   └── finished/    # Tested, proven designs
+├── models/          # All .scad designs
 ├── lib/             # Reusable modules
 ├── exports/         # Generated STL files (gitignored)
 └── .mcp.json        # OpenSCAD MCP server config
@@ -50,24 +48,23 @@ openscad/
 ## Workflow
 
 ### Creating New Models
-1. Create `.scad` file in `models/wip/`
-2. Create matching `.md` README documenting the design
+1. Create `.scad` file in `models/`
+2. Optionally create matching `.md` README documenting the design
 3. Iterate using OpenSCAD GUI or MCP renders
 4. Export STL to `exports/` when ready to print
-5. Move to `models/finished/` after successful print
 
 ### Rendering
 ```bash
 # Preview PNG
-openscad -o exports/model.png --autocenter --viewall model.scad
+openscad -o exports/model.png --autocenter --viewall models/model.scad
 
 # Export STL
-openscad -o exports/model.stl model.scad
+openscad -o exports/model.stl models/model.scad
 ```
 
 ### Opening GUI (WSL2)
 ```bash
-openscad models/wip/model.scad &
+openscad models/model.scad &
 ```
 
 ## Documentation
