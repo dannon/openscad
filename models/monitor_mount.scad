@@ -22,7 +22,7 @@ top_thickness = 5;
 
 /* [Ring Light Peg] */
 // Peg diameter
-peg_diameter = 5;
+peg_diameter = 5.25;
 // Peg height
 peg_height = 10;
 
@@ -49,10 +49,11 @@ module monitor_mount() {
     translate([total_depth - wall, 0, 0])
         sloped_back();
 
-    // Ring light peg on top, centered
-    translate([total_depth/2, 0, width/2])
+    // Ring light peg on top, towards back for balance
+    // Extends through full top thickness + 0.2mm
+    translate([total_depth - wall/2, top_thickness + 0.2, width/2])
         rotate([90, 0, 0])
-            cylinder(d=peg_diameter, h=peg_height);
+            cylinder(d=peg_diameter, h=peg_height + top_thickness + 0.2);
 }
 
 module sloped_back() {
