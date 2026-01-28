@@ -87,7 +87,7 @@ module sleeve_body() {
 
     // Double helix spiral bands (replaces vertical ribs)
     helix_height = sleeve_height - top_ring - bottom_ring;
-    helix_turns = 1.5;        // Number of full rotations
+    helix_turns = 1.5;       // Number of full rotations (lower = steeper pitch)
     helix_width = 5;          // Width of spiral band
     helix_segments = 60;      // Smoothness
 
@@ -137,58 +137,64 @@ module helix_band(height, turns, band_width, segments) {
 }
 
 module lip_ring() {
-    // Flared lip with consistent thickness
+    // Simple flush ring at top - no protruding lip
+    // Just a small cap on top of the wall for strength
     difference() {
-        union() {
-            // Main flange - less taper, stays thick at edge
-            cylinder(r1=outer_r, r2=lip_outer_r, h=wall*2);
-
-            // Thicken the outer edge
-            translate([0, 0, 0])
-                difference() {
-                    cylinder(r=lip_outer_r, h=wall*2);
-                    translate([0, 0, -1])
-                        cylinder(r=lip_outer_r - wall*2, h=wall*2 + 2);
-                }
-        }
-        // Hollow for bottle
+        cylinder(d=outer_d + wall, h=wall*2);
         translate([0, 0, -1])
             cylinder(d=inner_d, h=wall*2 + 2);
     }
-
-    // Reinforcement ribs from hooks to sleeve body
-    for (i = [0:hook_count-1]) {
-        rotate([0, 0, i * 360/hook_count])
-            hook_rib();
-    }
 }
 
-module hook_rib() {
-    // Radial rib connecting hook area to main body
-    rib_width = hook_width;
+module hook_platform_with_gussets() {
+    // Platform that extends outward only at hook location
+    platform_width = hook_width;      // Match hook width exactly
+    platform_depth = lip_width;       // How far it sticks out
+    platform_thickness = wall * 2;
 
-    translate([0, -rib_width/2, 0])
-        linear_extrude(height=wall*2)
-            polygon([
-                [outer_r - wall, 0],
-                [outer_r - wall, rib_width],
-                [lip_outer_r, rib_width/2 + hook_width/2],
-                [lip_outer_r, rib_width/2 - hook_width/2]
-            ]);
+    gusset_height = 8;   // How far down the gussets extend
+    gusset_thickness = 2;
+
+    // Platform extending from wall - centered on hook
+    translate([outer_r - wall/2, -platform_width/2, 0])
+        cube([platform_depth + wall/2, platform_width, platform_thickness]);
+
+    // Left gusset (triangular support)
+    translate([outer_r - wall/2, -platform_width/2 + gusset_thickness, 0])
+        rotate([90, 0, 0])
+            linear_extrude(height=gusset_thickness)
+                polygon([
+                    [0, 0],
+                    [platform_depth + wall/2, 0],
+                    [0, -gusset_height]
+                ]);
+
+    // Right gusset (triangular support)
+    translate([outer_r - wall/2, platform_width/2, 0])
+        rotate([90, 0, 0])
+            linear_extrude(height=gusset_thickness)
+                polygon([
+                    [0, 0],
+                    [platform_depth + wall/2, 0],
+                    [0, -gusset_height]
+                ]);
 }
 
 module hanging_hook() {
     // Individual rounded hook that hangs down to grip elastic
-    // Position at outer edge of lip, flush with top surface
+    // Position at outer edge of platform
 
     hook_angle = (hook_width / lip_outer_r) * (180/PI);  // Arc in degrees
 
-    // Position so top of hook is flush with top of lip
+    // Position so top of hook is flush with top of platform
     translate([0, 0, wall*2 - hook_thickness/2])
     rotate([0, 0, -hook_angle/2])
     rotate_extrude(angle=hook_angle)
     translate([lip_outer_r - hook_thickness/2, 0])
         hook_profile_2d();
+
+    // Platform with gusset supports
+    hook_platform_with_gussets();
 }
 
 module hook_profile_2d() {
