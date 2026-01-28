@@ -9,3 +9,5 @@ exports/*.png
 # OS files
 .DS_Store
 Thumbs.db
+
+.openscad-mcp
