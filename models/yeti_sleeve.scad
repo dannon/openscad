@@ -112,6 +112,32 @@ module sleeve_body() {
             translate([inner_r, -rib_width/2, bottom_ring])
                 cube([wall, rib_width, helix_height]);
     }
+
+    // Bottom reinforcement zone - denser structure in bottom ~25mm of helix
+    reinforce_height = 25;
+
+    // Wider ribs in reinforcement zone (8mm vs 5mm, fills gaps between helix)
+    reinforce_rib_width = 8;
+    for (angle = [22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5]) {
+        rotate([0, 0, angle])
+            translate([inner_r, -reinforce_rib_width/2, bottom_ring])
+                cube([wall, reinforce_rib_width, reinforce_height]);
+    }
+
+    // Extra helix strands in reinforcement zone - 4 strands, steeper pitch
+    reinforce_turns = 0.5;       // Steeper angle for more cross-bracing
+    reinforce_segments = 20;
+    reinforce_band_width = 6;    // Slightly wider bands
+    for (offset = [0, 90, 180, 270]) {
+        rotate([0, 0, offset])
+            translate([0, 0, bottom_ring])
+                helix_band(reinforce_height, reinforce_turns, reinforce_band_width, reinforce_segments);
+    }
+    for (offset = [45, 135, 225, 315]) {
+        rotate([0, 0, offset])
+            translate([0, 0, bottom_ring])
+                helix_band(reinforce_height, -reinforce_turns, reinforce_band_width, reinforce_segments);
+    }
 }
 
 module helix_band(height, turns, band_width, segments) {
