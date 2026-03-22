@@ -1,6 +1,6 @@
 /* [Tray Dimensions] */
-tray_width = 50;
-tray_length = 190;
+tray_width = 45;
+tray_length = 180;
 tray_height = 20;
 
 /* [Trough] */
