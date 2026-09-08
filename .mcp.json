@@ -10,7 +10,7 @@
         "openscad-mcp"
       ],
       "env": {
-        "OPENSCAD_PATH": "/usr/bin/openscad"
+        "OPENSCAD_PATH": "/opt/homebrew/bin/openscad"
       }
     }
   }
